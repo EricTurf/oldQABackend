@@ -1,0 +1,16 @@
+{
+  "name": "atomic",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "body-parser": "~1.18",
+    "ejs": "~2.5",
+    "express": "~4.5",
+    "jsonwebtoken": "~8.0",
+    "mysql": "~2.14",
+    "sendgrid": "^4.2.0",
+    "email-validator": "1.1.1"
+  },
+  "author": "eric.turriff@gmail.com",
+  "license": "ISC"
+}
