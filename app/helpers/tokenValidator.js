@@ -1,10 +1,10 @@
-var jwt = require('jsonwebtoken');
+import jwt from "jsonwebtoken";
 
-module.exports = function(token, callback) {
+export default (token, callback) => {
   console.log(token);
-  jwt.verify(token, 'ilikepie', function(err, decoded) {
+  jwt.verify(token, "ilikepie", function(err, decoded) {
     if (err) {
-      callback(new Error('Error decoding token'));
+      callback(new Error("Error decoding token"));
     } else {
       console.log(decoded);
       callback(null, decoded);
