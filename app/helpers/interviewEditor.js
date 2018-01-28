@@ -13,6 +13,7 @@ export const addQuestions = (questions, tableName) => {
                 .catch(err => {
                     reject(Error());
                 });
+        reject(Error());
     });
 };
 
