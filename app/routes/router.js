@@ -2,21 +2,18 @@
  * http://usejsdoc.org/
  */
 
-import mysql from 'mysql';
 import express from 'express';
 import {
-  getQuestions,
-  addQuestions,
-  deleteQuestions,
-  compileInterview,
-  createUser,
-  getUserInfo,
-  validateUser,
-  login
+    getQuestions,
+    addQuestions,
+    deleteQuestions,
+    compileInterview,
+    createInterview,
+    createUser,
+    getUserInfo,
+    validateUser,
+    login,
 } from './api';
-import { connection, userData, TokenValidator, EmailSender } from '../helpers';
-import jwt from 'jsonwebtoken';
-import EmailValidator from 'email-validator';
 
 const router = express.Router();
 
@@ -26,13 +23,15 @@ router.route('/questions/add').post(addQuestions);
 
 router.route('/questions/delete/:id').delete(deleteQuestions);
 
-router.route('/interview/compile/:firstName/:lastName').post(compileInterview);
+router.route('/interview/create').post(createInterview);
+
+router.route('/interview/compile/:interviewId').post(compileInterview);
 
 router.route('/users/create').post(createUser);
 
-router.route('users/info').get(getUserInfo);
+router.route('users/info/:token').get(getUserInfo);
 
-router.route('/users/validate').post(validateUser);
+router.route('/users/validate/:token').patch(validateUser);
 
 router.route('/login').post(login);
 

@@ -1,72 +1,56 @@
-import mysql from 'mysql';
-import { connection } from '../../../helpers';
-import EmailValidator from 'email-validator';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+
+import {
+    connection,
+    validateInput,
+    knex,
+    emailSender,
+    createToken,
+} from '../../../helpers';
 
 export const createUser = (req, res) => {
-  if (
-    req.body.email == null ||
-    req.body.email == '' ||
-    req.body.password == null ||
-    req.body.password == ''
-  ) {
-    res.json({
-      success: false,
-      message: 'Email and/or password was left empty!'
-    });
-  } else if (!EmailValidator.validate(req.body.email)) {
-    res.json({
-      success: false,
-      message: 'Invalid email address. Please enter an actual email address'
-    });
-  } else {
-    var query = 'INSERT INTO ??(??,??) VALUES (?,?)';
-    var table = [
-      'users',
-      'email',
-      'password',
-      req.body.email,
-      req.body.password
-    ];
-    query = mysql.format(query, table);
-    connection.query(query, function(err, rows) {
-      if (err) {
-        res.json({
-          success: false,
-          message: 'SQL error' + err
-        });
-      } else {
-        var tempToken = jwt.sign(
-          {
-            email: req.body.email
-          },
-          'ilikepie',
-          {
-            expiresIn: '1h'
-          }
-        );
-        if (tempToken) {
-          var subject =
-            'Activation link for your QuestionApp account: ' + req.body.email;
-          var msg =
-            'To activate your account, please click on the following link: https://radiant-lake-20483.herokuapp.com/activateUser/' +
-            tempToken;
-          EmailSender(req.body.email, subject, msg, function(err) {
-            if (err) {
-              res.json({
-                success: false,
-                message: 'Problem encountered when sending email',
-                token: tempToken
-              });
-            } else {
-              res.json({
-                success: true,
-                message: 'Activation link sent!'
-              });
-            }
-          });
-        }
-      }
-    });
-  }
+    const { email, password } = req.body;
+
+    validateInput('email', email) &&
+        password &&
+        bcrypt
+            .hash(password, 10)
+            .then(hash => {
+                knex('users')
+                    .insert({ email, password: hash })
+                    .then(() => {
+                        const token = createToken({ email });
+                        const subject = `QuestionApp activation link for ${email}`;
+                        const message = `To activate your account, please click on the following link: https://localhost:8080/users/validate/${token}`;
+                        emailSender(email, subject, message)
+                            .then(() => {
+                                res.json({
+                                    success: true,
+                                    message:
+                                        'Please check your inbox for an activation link',
+                                    token,
+                                });
+                            })
+                            .catch(err => {
+                                res.json({
+                                    success: false,
+                                    message:
+                                        'Error sending your verification email',
+                                });
+                            });
+                    })
+                    .catch(err => {
+                        res.json({
+                            success: false,
+                            message: 'Error adding you to the database',
+                        });
+                    });
+            })
+            .catch(err => {
+                res.json({
+                    success: false,
+                    message: 'Error hashing password',
+                });
+            });
 };

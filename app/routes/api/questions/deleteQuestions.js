@@ -1,28 +1,31 @@
-import mysql from 'mysql';
-import { connection } from '../../../helpers';
+import { knex } from '../../../helpers';
 
 export const deleteQuestions = (req, res) => {
-  if (req.params.id == null || req.params.id == '') {
-    res.json({
-      success: false,
-      message: 'No question selected for deletion'
-    });
-  } else {
-    var query = 'DELETE FROM ?? WHERE??=?';
-    var table = ['interviewq', 'id', req.params.id];
-    query = mysql.format(query, table);
-    connection.query(query, (err, rows) => {
-      if (err) {
+    const { id } = req.params;
+
+    if (!validateId) {
         res.json({
-          success: false,
-          message: 'Error executing MySQL query'
+            success: false,
+            message: 'No question selected for deletion',
         });
-      } else {
-        res.json({
-          success: true,
-          message: 'Succesfully deleted question(s)'
-        });
-      }
-    }); //end of connection.query
-  }
+    } else {
+        knex('interviewq')
+            .where('id', id)
+            .del()
+            .then(() => {
+                res.json({
+                    success: true,
+                    message: 'Succesfully deleted question',
+                });
+            })
+            .catch(err => {
+                res.json({
+                    success: false,
+                    message: 'Error executing MySQL query',
+                });
+            });
+    }
+};
+const validateId = id => {
+    return id !== null || id !== '' || id !== undefined;
 };

@@ -1,21 +1,21 @@
 import mysql from 'mysql';
-import { connection } from '../../../helpers';
+import { knex } from '../../../helpers';
 
 export const getQuestions = (req, res) => {
-  var query = 'SELECT * FROM ??';
-  var table = ['interviewq'];
-  query = mysql.format(query, table);
-  connection.query(query, (err, rows) => {
-    if (err) {
-      res.json({
-        success: false,
-        Message: 'Error executing MySQL query'
-      });
-    } else {
-      res.json({
-        success: true,
-        Questions: rows
-      });
-    }
-  }); // end of connection.query
+    knex
+        .select('question')
+        .select('id')
+        .from('interviewq')
+        .then(rows => {
+            res.json({
+                success: true,
+                questions: rows,
+            });
+        })
+        .catch(err => {
+            res.json({
+                success: false,
+                message: 'Error executing MySQL query',
+            });
+        });
 };

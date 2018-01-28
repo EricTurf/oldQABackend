@@ -11,15 +11,15 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(
-  bodyParser.json({
-    type: 'application/vnd.api+json'
-  })
+    bodyParser.json({
+        type: 'application/json',
+    })
 );
 app.use('/api', router);
 app.use(
-  bodyParser.urlencoded({
-    extended: true
-  })
+    bodyParser.urlencoded({
+        extended: true,
+    })
 );
 app.use(express.static(__dirname + '/public'));
 

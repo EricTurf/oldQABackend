@@ -1,4 +1,5 @@
-export { default as connection } from "./dbconnector";
-export { default as EmailSender } from "./sendEmail";
-export { default as tokenValidator } from "./tokenValidator";
-export { default as userData } from "./userData";
+export { knex } from './dbconnector';
+export { default as emailSender } from './email-sender';
+export * from './tokenService';
+export { default as userData } from './userData';
+export { default as validateInput } from './inputValidator';

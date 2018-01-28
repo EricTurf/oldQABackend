@@ -1,26 +1,25 @@
-import { TokenValidator } from '../../../helpers';
+import { validateToken } from '../../../helpers';
 
 export const getUserInfo = (req, res) => {
-  var token = req.body.token || req.body.query || req.headers['x-access-token'];
-  if (token) {
-    TokenValidator(token, (err, vToken) => {
-      if (err) {
-        res.json({
-          success: false,
-          message: err.message
-        });
-      } else {
-        res.json({
-          success: true,
-          message: 'Token validated',
-          username: vToken.username
-        });
-      }
-    });
-  } else {
+    const { token } = req.params;
+
+    token &&
+        validateToken(token)
+            .then(({ email }) => {
+                res.json({
+                    success: true,
+                    email,
+                });
+            })
+            .catch(err => {
+                res.json({
+                    success: false,
+                    error: err,
+                });
+            });
+
     res.json({
-      success: false,
-      message: 'no token was provided.'
+        success: false,
+        message: 'no token was provided.',
     });
-  }
 };
