@@ -5,8 +5,6 @@
 import express from 'express';
 import {
     getQuestions,
-    addQuestions,
-    deleteQuestions,
     compileInterview,
     createInterview,
     createUser,
@@ -17,13 +15,9 @@ import {
 
 const router = express.Router();
 
-router.route('/questions').get(getQuestions);
+router.route('/questions/:interviewId').get(getQuestions);
 
-router.route('/questions/add').post(addQuestions);
-
-router.route('/questions/delete/:id').delete(deleteQuestions);
-
-router.route('/interview/create').post(createInterview);
+router.route('/interview/create/:interviewName').post(createInterview);
 
 router.route('/interview/compile/:interviewId').post(compileInterview);
 
