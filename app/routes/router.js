@@ -7,6 +7,7 @@ import {
     getQuestions,
     compileInterview,
     createInterview,
+    editInterview,
     createUser,
     getUserInfo,
     validateUser,
@@ -20,6 +21,8 @@ router.route('/questions/:interviewId').get(getQuestions);
 router.route('/interview/create/:interviewName').post(createInterview);
 
 router.route('/interview/compile/:interviewId').post(compileInterview);
+
+router.route('/interview/edit/:interviewId').post(editInterview);
 
 router.route('/users/create').post(createUser);
 

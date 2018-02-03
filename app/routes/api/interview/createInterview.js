@@ -1,11 +1,11 @@
-import { knex, addQuestions } from '../../../helpers';
+import { knex, addQuestions, createTable } from '../../../helpers';
 import { generate } from 'rand-token';
 
 export const createInterview = (req, res) => {
     const { questions, owner } = req.body;
-    const { interviewName } = req.params;
+    const { interviewName, interviewId } = req.params;
     const tableName = generate(12);
-    interviewName &&
+    if (interviewName && questions) {
         knex('interviews')
             .insert({
                 interviewName,
@@ -13,11 +13,7 @@ export const createInterview = (req, res) => {
                 interviewId: tableName,
             })
             .then(() => {
-                knex.schema
-                    .createTable(tableName, table => {
-                        table.increments();
-                        table.string('question', 1000);
-                    })
+                createTable({ interviewId, tableName })
                     .then(() => {
                         addQuestions(questions, tableName)
                             .then(() => {
@@ -48,4 +44,10 @@ export const createInterview = (req, res) => {
                     message: 'error creating your interview',
                 });
             });
+    } else {
+        res.json({
+            success: false,
+            message: 'You forgot to give us an interview name or question',
+        });
+    }
 };
